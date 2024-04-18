@@ -108,7 +108,7 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> {
           ),
           ElevatedButton(
             onPressed: () {
-              _generateTimeSlots();
+              _confirmSchedule();
             },
             child: Text('Schedule'),
           ),
@@ -127,6 +127,43 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _confirmSchedule() {
+    if (_selectedDay == null || _startTime == null || _endTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select a date and time range'),
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Schedule'),
+          content: Text(
+              'Do you want to schedule appointments from ${_startTime!.format(context)} to ${_endTime!.format(context)} on ${_selectedDay!.toString().split(' ')[0]}?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _generateTimeSlots();
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Confirm'),
+            ),
+          ],
+        );
+      },
     );
   }
 

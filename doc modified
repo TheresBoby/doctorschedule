@@ -1,3 +1,4 @@
+// ignore_for_file: unused_field
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -112,19 +113,6 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> {
             },
             child: Text('Schedule'),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _scheduledTimeSlots.length,
-              itemBuilder: (context, index) {
-                return TimeSlotTile(
-                  timeSlot: _scheduledTimeSlots[index],
-                  onTap: () {
-                    // Handle time slot selection
-                  },
-                );
-              },
-            ),
-          ),
         ],
       ),
     );
@@ -140,30 +128,17 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> {
       return;
     }
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Schedule'),
-          content: Text(
-              'Do you want to schedule appointments from ${_startTime!.format(context)} to ${_endTime!.format(context)} on ${_selectedDay!.toString().split(' ')[0]}?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _generateTimeSlots();
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Confirm'),
-            ),
-          ],
-        );
-      },
+    _scheduledTimeSlots = []; // Initialize _scheduledTimeSlots as an empty list
+    _generateTimeSlots();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScheduledTimeSlotsPage(
+          date: _selectedDay!,
+          timeSlots: _scheduledTimeSlots,
+        ),
+      ),
     );
   }
 
@@ -208,6 +183,36 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> {
     setState(() {
       _scheduledTimeSlots = scheduledTimeSlots;
     });
+  }
+}
+
+class ScheduledTimeSlotsPage extends StatelessWidget {
+  final DateTime date;
+  final List<String> timeSlots;
+
+  ScheduledTimeSlotsPage({
+    required this.date,
+    required this.timeSlots,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scheduled Time Slots'),
+      ),
+      body: ListView.builder(
+        itemCount: timeSlots.length,
+        itemBuilder: (context, index) {
+          return TimeSlotTile(
+            timeSlot: timeSlots[index],
+            onTap: () {
+              // Handle time slot selection
+            },
+          );
+        },
+      ),
+    );
   }
 }
 
